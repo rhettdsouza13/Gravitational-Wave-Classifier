@@ -1,1 +1,1 @@
-# Gravitational-Wave-Classifier
+# Gravitational-Wave-Detection
