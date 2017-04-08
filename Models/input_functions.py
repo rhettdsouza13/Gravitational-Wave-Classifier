@@ -13,8 +13,12 @@ FRAME_LIST = os.listdir(FRAME_PATH)
 FEATURES = [str(i) for i in xrange(40961)]
 LABELS = ["gw", "noise"]
 
+batch=0
+dataSet=numpy.array([])
+
+
 def process_data():
-    data = []
+    data=[]
     for tempfile in TEMP_FILES_LIST:
         template = h5py.File(TEMP_PATH + tempfile)
         data.append(abs(template["amp"][...]))
@@ -53,5 +57,18 @@ def process_data():
 
     return numpy.array(data), numpy.array(labels)
 
-def input_fn_train():
-    data_set = process_data()
+
+
+
+def input_fn():
+    global dataSet
+
+    dataSet = process_data()
+
+def next_batch(bSize):
+    global batch
+    global dataSet
+
+    batchVal= batch
+    batch += bSize
+    return dataSet[0][batchVal:batchVal+bSize], dataSet[1][batchVal:batchVal+bSize]
