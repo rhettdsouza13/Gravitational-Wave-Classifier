@@ -22,18 +22,18 @@ def process_data():
     for tempfile in TEMP_FILES_LIST:
         template = h5py.File(TEMP_PATH + tempfile)
         data.append([abs(template["amp"][...][:7200]), [0,1]])
-        data.append([abs(template["amp"][...][:7200]), [0,1]])
-        data.append([abs(template["amp"][...][:7200]), [0,1]])
+        print "processed " + tempfile
+
 
 
 
     for framefile in FRAME_LIST:
         strain_with_nan, time, chan_dict = readligo.loaddata(FRAME_PATH + framefile)
         strain = numpy.nan_to_num(strain_with_nan)
-        for seg in xrange(204):
+        for seg in xrange(203):
             segment = abs(numpy.fft.rfft(strain[seg*81920:(seg+1)*81920]))
             data.append([segment[:7200], [1,0]])
-
+        print "processed " + framefile
 
 
     # for filnum in range(1,len(S5_PATH_FOLD_LIST)/2):
@@ -80,8 +80,10 @@ def input_fn():
     global dataSet
     global labelSet
 
+
     labelSet = numpy.load('/home/rhett/Projects/GWData/labeldata.npy')
     dataSet = numpy.load('/home/rhett/Projects/GWData/saveddata.npy')
+    print len(dataSet)
 
 def next_batch(bSize):
     global batch

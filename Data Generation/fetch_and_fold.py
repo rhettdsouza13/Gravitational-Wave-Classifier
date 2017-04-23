@@ -2,7 +2,7 @@ import os, urllib2
 import numpy
 import readligo
 from retry import retry
-PATH='/home/rhett/Projects/GWData/S5H2/'
+PATH='/home/rhett/Projects/GWData/Frames/'
 Sec = 4096      # samples per second
 Hour = 4096     # seconds per file
 FoldTime = 40   # seconds for folding
