@@ -19,10 +19,10 @@ labelSet = numpy.array([])
 
 def process_data():
     data=[]
-    for tempfile in TEMP_FILES_LIST:
-        template = h5py.File(TEMP_PATH + tempfile)
-        data.append([abs(template["amp"][...][:7200]), [0,1]])
-        print "processed " + tempfile
+    # for tempfile in TEMP_FILES_LIST[:-2]:
+    #     template = h5py.File(TEMP_PATH + tempfile)
+    #     data.append([abs(template["amp"][...][:3000]), [0,1]])
+    #     print "processed " + tempfile
 
 
 
@@ -32,10 +32,10 @@ def process_data():
         strain = numpy.nan_to_num(strain_with_nan)
         for seg in xrange(203):
             segment = abs(numpy.fft.rfft(strain[seg*81920:(seg+1)*81920]))
-            data.append([segment[:7200], [1,0]])
+            data.append([segment[:3000], [1,0]])
         print "processed " + framefile
 
-
+    #
     # for filnum in range(1,len(S5_PATH_FOLD_LIST)/2):
     #     foldsum = numpy.load(S5_PATH + 'fold' + str(filnum) + 'sum.npy')
     #     foldnum = numpy.load(S5_PATH + 'fold' + str(filnum) + 'num.npy')
@@ -61,8 +61,8 @@ def process_data():
         labelToSave.append(val)
     labelToSave = numpy.array(labelToSave)
 
-    numpy.save('/home/rhett/Projects/GWData/saveddata.npy', dataToSave)
-    numpy.save('/home/rhett/Projects/GWData/labeldata.npy', labelToSave)
+    numpy.save('/home/rhett/Projects/GWData/saveddatanos3000.npy', dataToSave)
+    numpy.save('/home/rhett/Projects/GWData/labeldatanos3000.npy', labelToSave)
     #
     #
     # # labels = [[1,0] for val1 in TEMP_FILES_LIST]
@@ -76,13 +76,37 @@ def process_data():
 
 
 
-def input_fn():
+def input_fn_train():
     global dataSet
     global labelSet
 
+    labelSet = numpy.load('/home/rhett/Projects/GWData/labeldatapos3000.npy')
+    dataSet = numpy.load('/home/rhett/Projects/GWData/saveddatapos3000.npy')
+    print len(dataSet)
+
+def input_fn_noise():
+    global dataSet
+    global labelSet
+
+    labelSet = numpy.load('/home/rhett/Projects/GWData/labeldatanos3000.npy')
+    dataSet = numpy.load('/home/rhett/Projects/GWData/saveddatanos3000.npy')
+    print len(dataSet)
+
+
+def input_fn_test():
+    global dataSet
+    global labelSet
 
     labelSet = numpy.load('/home/rhett/Projects/GWData/labeldata.npy')
     dataSet = numpy.load('/home/rhett/Projects/GWData/saveddata.npy')
+    print len(dataSet)
+
+def input_fn_test3000():
+    global dataSet
+    global labelSet
+
+    labelSet = numpy.load('/home/rhett/Projects/GWData/labeldata3000.npy')
+    dataSet = numpy.load('/home/rhett/Projects/GWData/saveddata3000.npy')
     print len(dataSet)
 
 def next_batch(bSize):

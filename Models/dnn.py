@@ -43,8 +43,6 @@ with tf.device('/gpu:1'):
 
     h_4 = tf.nn.relu(tf.matmul(h_3_drop, W_4) + b_4)
 
-    h_4_N = tf.nn.l2_normalize(h_4, 0)
-
     W_4_1 = weight_initializer([200,10])
     b_4_1 = bias_initializer([10])
 
