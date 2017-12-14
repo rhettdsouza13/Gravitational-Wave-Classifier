@@ -19,21 +19,41 @@ labelSet = numpy.array([])
 
 def process_data():
     data=[]
-    # for tempfile in TEMP_FILES_LIST[:-2]:
-    #     template = h5py.File(TEMP_PATH + tempfile)
-    #     data.append([abs(template["amp"][...][:3000]), [0,1]])
-    #     print "processed " + tempfile
+    templates = []
+    for tempfile in TEMP_FILES_LIST[:-2]:
+        template = h5py.File(TEMP_PATH + tempfile)
+        label = [0 for i in xrange(81920)]
+        templates.append(template)
+        for val in template:
+            label.append(val)
+        data.append([abs(template["amp"][...][:]), label])
+        print "processed " + tempfile
 
 
 
-
+    iters = 0
     for framefile in FRAME_LIST:
         strain_with_nan, time, chan_dict = readligo.loaddata(FRAME_PATH + framefile)
         strain = numpy.nan_to_num(strain_with_nan)
         for seg in xrange(203):
+            label = []
             segment = abs(numpy.fft.rfft(strain[seg*81920:(seg+1)*81920]))
-            data.append([segment[:3000], [1,0]])
-        print "processed " + framefile
+            label = segment
+            for i in xrange(81920):
+                label.append(0)
+            data.append([segment, label])
+            if iters < len(templates):
+                noisey_temp = []
+                for h, h_n in zip(templates[iters],segment):
+                    noisey_temp.append(h+h_n)
+                label = []
+                label = segment
+                for h in templates[iters]:
+                    label.append(h)
+                data.append([noisey_temp, label])
+                iters += 1
+        print "processed with templates associated" + framefile
+
 
     #
     # for filnum in range(1,len(S5_PATH_FOLD_LIST)/2):
@@ -61,8 +81,8 @@ def process_data():
         labelToSave.append(val)
     labelToSave = numpy.array(labelToSave)
 
-    numpy.save('/home/rhett/Projects/GWData/saveddatanos3000.npy', dataToSave)
-    numpy.save('/home/rhett/Projects/GWData/labeldatanos3000.npy', labelToSave)
+    numpy.save('saveddata.npy', dataToSave)
+    numpy.save('labeldata.npy', labelToSave)
     #
     #
     # # labels = [[1,0] for val1 in TEMP_FILES_LIST]
